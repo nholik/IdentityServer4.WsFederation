@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IdentityModel.Services;
+using Microsoft.IdentityModel.Protocols.WsFederation;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
@@ -25,8 +25,8 @@ namespace IdentityServer4.WsFederation
         private readonly SignInValidator _signinValidator;
 
         public WsFederationController(
-            MetadataResponseGenerator metadata, 
-            SignInValidator signinValidator, 
+            MetadataResponseGenerator metadata,
+            SignInValidator signinValidator,
             IdentityServerOptions options,
             SignInResponseGenerator generator,
             IUserSession sessionService,
@@ -52,28 +52,33 @@ namespace IdentityServer4.WsFederation
                 var entity = await _metadata.GenerateAsync(Url.Action("Index", "WsFederation", null, Request.Scheme, Request.Host.Value));
                 return new MetadataResult(entity);
             }
-            
+
             var url = Url.Action("Index", "WsFederation", null, Request.Scheme, Request.Host.Value) + Request.QueryString;
             _logger.LogDebug("Start WS-Federation request: {url}", url);
 
-            if (WSFederationMessage.TryCreateFromUri(new Uri(url), out WSFederationMessage message))
+            try
             {
-                if (message is SignInRequestMessage signin)
-                {
-                    return await ProcessSignInAsync(signin, User);
-                }
+                var message = WsFederationMessage.FromUri(new Uri(url));
 
-                if (message is SignOutRequestMessage signout)
-                {
-                    return ProcessSignOutAsync(signout);
-                }
+                if (message.IsSignInMessage)
+                    return await ProcessSignInAsync(message, User);
+                else if (message.IsSignOutMessage)
+                    return ProcessSignOutAsync(message);
+
+                return BadRequest("Invalid WS-Federation request");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating WS-Federation request.");
+                return BadRequest("Invalid WS-Federation request");
+
             }
 
-            return BadRequest("Invalid WS-Federation request");
         }
 
-        
-        private async Task<IActionResult> ProcessSignInAsync(SignInRequestMessage signin, ClaimsPrincipal user)
+
+        private async Task<IActionResult> ProcessSignInAsync(WsFederationMessage signin, ClaimsPrincipal user)
         {
             if (user.Identity.IsAuthenticated)
             {
@@ -107,14 +112,12 @@ namespace IdentityServer4.WsFederation
                 // create protocol response
                 var responseMessage = await _generator.GenerateResponseAsync(result);
                 await _sessionService.AddClientIdAsync(result.Client.ClientId);
-                
+
                 return new SignInResult(responseMessage);
             }
         }
 
-        private IActionResult ProcessSignOutAsync(SignOutRequestMessage signout)
-        {
-            return Redirect("~/connect/endsession");
-        }
+        private IActionResult ProcessSignOutAsync(WsFederationMessage signout) =>  Redirect("~/connect/endsession");
+
     }
 }

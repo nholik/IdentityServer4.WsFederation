@@ -4,11 +4,12 @@
 
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Protocols.WsFederation;
+// using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Metadata;
-using System.IdentityModel.Protocols.WSTrust;
-using System.IdentityModel.Tokens;
+// using System.IdentityModel.Metadata;
+// using System.IdentityModel.Protocols.WSTrust;
+// using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;

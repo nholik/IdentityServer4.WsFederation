@@ -4,8 +4,9 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Services;
+// using System.IdentityModel.Services;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Protocols.WsFederation;
 
 namespace IdentityServer4.WsFederation
 {

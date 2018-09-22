@@ -4,8 +4,9 @@
 
 using IdentityServer4.Models;
 using IdentityServer4.WsFederation.Stores;
-using System.IdentityModel.Services;
+// using System.IdentityModel.Services;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Protocols.WsFederation;
 
 namespace IdentityServer4.WsFederation.Validation
 {

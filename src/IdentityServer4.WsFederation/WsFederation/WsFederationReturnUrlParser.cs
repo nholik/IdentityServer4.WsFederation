@@ -10,7 +10,8 @@ using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.WsFederation.Validation;
 using Microsoft.AspNetCore.Http;
-using System.IdentityModel.Services;
+using Microsoft.IdentityModel.Protocols.WsFederation;
+// using System.IdentityModel.Services;
 using System.Net;
 
 namespace IdentityServer4.WsFederation

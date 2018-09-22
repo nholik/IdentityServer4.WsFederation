@@ -4,7 +4,8 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Metadata;
+using Microsoft.IdentityModel.Protocols.WsFederation;
+// using System.IdentityModel.Metadata;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
